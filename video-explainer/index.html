@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --paper: #f6efe5;
+        --paper-bright: #fffaf4;
+        --mist: #eef3fb;
+        --ink: #18263f;
+        --muted: #5d697d;
+        --line: #d9dfeb;
+        --blue: #2d6cff;
+        --cobalt: #2742a4;
+        --mint: #18b884;
+        --coral: #ff6f47;
+        --sun: #ffbf57;
+        --shadow: 0 34px 90px rgba(24, 38, 63, 0.13);
+        --shadow-soft: 0 18px 36px rgba(24, 38, 63, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 12% 16%, rgba(45, 108, 255, 0.12), transparent 26%),
+          radial-gradient(circle at 82% 18%, rgba(24, 184, 132, 0.12), transparent 22%),
+          radial-gradient(circle at 72% 88%, rgba(255, 111, 71, 0.12), transparent 22%),
+          linear-gradient(180deg, var(--paper-bright) 0%, var(--paper) 100%);
+        color: var(--ink);
+        font-family:
+          "Outfit",
+          "Inter",
+          "Segoe UI",
+          system-ui,
+          sans-serif;
+      }
+
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      body::before {
+        background-image:
+          linear-gradient(rgba(39, 66, 164, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(39, 66, 164, 0.035) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: radial-gradient(circle at center, black 58%, transparent 100%);
+      }
+
+      body::after {
+        background:
+          linear-gradient(130deg, rgba(255, 255, 255, 0.45), transparent 30%),
+          repeating-linear-gradient(
+            0deg,
+            rgba(24, 38, 63, 0.018),
+            rgba(24, 38, 63, 0.018) 1px,
+            transparent 1px,
+            transparent 4px
+          );
+        opacity: 0.28;
+        mix-blend-mode: multiply;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-family:
+          "Archivo Black",
+          "Outfit",
+          sans-serif;
+        font-weight: 400;
+        letter-spacing: -0.05em;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+
+      .shape {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(8px);
+        opacity: 0.9;
+      }
+
+      .shape-a {
+        top: 120px;
+        left: -110px;
+        width: 360px;
+        height: 360px;
+        background: radial-gradient(circle, rgba(45, 108, 255, 0.18), transparent 70%);
+      }
+
+      .shape-b {
+        right: -120px;
+        top: 320px;
+        width: 420px;
+        height: 420px;
+        background: radial-gradient(circle, rgba(24, 184, 132, 0.16), transparent 70%);
+      }
+
+      .shape-c {
+        left: 720px;
+        bottom: -160px;
+        width: 520px;
+        height: 360px;
+        background: radial-gradient(circle, rgba(255, 111, 71, 0.13), transparent 70%);
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        padding: 86px 96px 78px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        border-radius: 999px;
+        border: 1px solid rgba(39, 66, 164, 0.12);
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow: 0 12px 30px rgba(24, 38, 63, 0.06);
+        color: var(--cobalt);
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--blue), var(--mint));
+      }
+
+      .hero-title {
+        max-width: 860px;
+        margin-top: 30px;
+        font-size: 112px;
+        line-height: 0.92;
+      }
+
+      .hero-copy {
+        max-width: 780px;
+        margin-top: 26px;
+        font-size: 34px;
+        line-height: 1.36;
+        color: var(--muted);
+      }
+
+      .section-title {
+        max-width: 760px;
+        margin-top: 26px;
+        font-size: 86px;
+        line-height: 0.95;
+      }
+
+      .section-copy {
+        max-width: 700px;
+        margin-top: 20px;
+        font-size: 29px;
+        line-height: 1.42;
+        color: var(--muted);
+      }
+
+      .intro-grid,
+      .split-grid {
+        display: grid;
+        align-items: center;
+        gap: 46px;
+        height: 100%;
+      }
+
+      .intro-grid {
+        grid-template-columns: 0.95fr 1.05fr;
+      }
+
+      .split-grid {
+        grid-template-columns: 0.9fr 1.1fr;
+      }
+
+      .stat-row {
+        display: flex;
+        gap: 16px;
+        margin-top: 34px;
+      }
+
+      .stat-chip {
+        min-width: 220px;
+        padding: 18px 18px 16px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.86);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .stat-chip strong,
+      .tiny-card strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--cobalt);
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .stat-chip span {
+        display: block;
+        font-size: 26px;
+        font-weight: 700;
+      }
+
+      .collage,
+      .control-stage,
+      .report-stage {
+        position: relative;
+        height: 100%;
+      }
+
+      .product-card {
+        position: absolute;
+        overflow: hidden;
+        border: 1px solid rgba(24, 38, 63, 0.09);
+        border-radius: 32px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: var(--shadow);
+      }
+
+      .product-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 16%);
+      }
+
+      .card-topline {
+        position: absolute;
+        inset: 14px 14px auto 14px;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .frame-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(24, 38, 63, 0.08);
+        color: var(--ink);
+        font-size: 17px;
+        font-weight: 700;
+      }
+
+      .frame-label::before {
+        content: "";
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: var(--coral);
+      }
+
+      .frame-meta {
+        padding: 10px 12px;
+        border-radius: 999px;
+        background: rgba(24, 38, 63, 0.06);
+        color: var(--muted);
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .product-media {
+        position: absolute;
+        inset: 18px;
+        overflow: hidden;
+        border-radius: 22px;
+        background: #f9fbff;
+      }
+
+      .product-media img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top left;
+      }
+
+      .product-card.tilt-left {
+        transform: rotate(-2.2deg);
+      }
+
+      .product-card.tilt-right {
+        transform: rotate(2deg);
+      }
+
+      .note-card,
+      .tiny-card {
+        position: absolute;
+        z-index: 3;
+        padding: 18px 20px;
+        border-radius: 24px;
+        border: 1px solid rgba(24, 38, 63, 0.08);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .note-card {
+        max-width: 300px;
+        background: #fff9f3;
+      }
+
+      .note-card strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--coral);
+      }
+
+      .note-card span,
+      .tiny-card span {
+        display: block;
+        font-size: 22px;
+        line-height: 1.28;
+      }
+
+      .tiny-card {
+        min-width: 260px;
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      .control-stage {
+        margin-top: 18px;
+      }
+
+      .control-main {
+        right: 24px;
+        bottom: 54px;
+        width: 910px;
+        height: 548px;
+      }
+
+      .control-inset {
+        left: 26px;
+        top: 66px;
+        width: 600px;
+        height: 296px;
+      }
+
+      .process-board {
+        position: absolute;
+        left: 94px;
+        right: 94px;
+        bottom: 30px;
+        height: 470px;
+        border: 1px solid rgba(24, 38, 63, 0.08);
+        border-radius: 36px;
+        background:
+          radial-gradient(circle at 12% 20%, rgba(45, 108, 255, 0.08), transparent 22%),
+          radial-gradient(circle at 86% 22%, rgba(24, 184, 132, 0.08), transparent 20%),
+          rgba(255, 255, 255, 0.86);
+        box-shadow: var(--shadow);
+      }
+
+      .step-row {
+        position: absolute;
+        inset: 54px 64px 132px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 26px;
+      }
+
+      .step-card {
+        position: relative;
+        padding: 26px 24px 24px;
+        border-radius: 28px;
+        border: 1px solid rgba(24, 38, 63, 0.08);
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        margin-bottom: 16px;
+        background: var(--ink);
+        color: white;
+        font-size: 20px;
+        font-weight: 800;
+      }
+
+      .step-card h3 {
+        margin: 0;
+        font-size: 34px;
+        line-height: 1.04;
+        letter-spacing: -0.03em;
+      }
+
+      .step-card p {
+        margin-top: 14px;
+        font-size: 22px;
+        line-height: 1.34;
+        color: var(--muted);
+      }
+
+      .step-card.step-intake .step-number {
+        background: var(--blue);
+      }
+
+      .step-card.step-route .step-number {
+        background: var(--coral);
+      }
+
+      .step-card.step-execute .step-number {
+        background: var(--ink);
+      }
+
+      .step-card.step-report .step-number {
+        background: var(--mint);
+      }
+
+      .step-connector {
+        position: absolute;
+        top: 226px;
+        height: 4px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(24, 38, 63, 0.04), rgba(24, 38, 63, 0.28), rgba(24, 38, 63, 0.04));
+      }
+
+      .memory-strip {
+        position: absolute;
+        left: 64px;
+        right: 64px;
+        bottom: 54px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1fr;
+        gap: 16px;
+      }
+
+      .memory-chip {
+        padding: 20px 22px;
+        border-radius: 22px;
+        border: 1px solid rgba(24, 38, 63, 0.08);
+        background: rgba(246, 249, 255, 0.88);
+      }
+
+      .memory-chip strong {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cobalt);
+      }
+
+      .memory-chip span {
+        display: block;
+        font-size: 22px;
+        line-height: 1.3;
+        color: var(--ink);
+      }
+
+      .detail-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 30px;
+      }
+
+      .detail-card {
+        padding: 20px 22px;
+        border-radius: 24px;
+        border: 1px solid rgba(24, 38, 63, 0.08);
+        background: rgba(255, 255, 255, 0.86);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .detail-card strong {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--coral);
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .detail-card span {
+        display: block;
+        font-size: 24px;
+        line-height: 1.33;
+      }
+
+      .stage-shell {
+        position: relative;
+        height: 100%;
+      }
+
+      .scout-main {
+        right: 0;
+        top: 64px;
+        width: 980px;
+        height: 624px;
+      }
+
+      .report-top {
+        left: 0;
+        top: 40px;
+        width: 930px;
+        height: 408px;
+      }
+
+      .report-body {
+        right: 0;
+        bottom: 24px;
+        width: 910px;
+        height: 496px;
+      }
+
+      .logo-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 20px;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(24, 38, 63, 0.08);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .logo-badge img {
+        width: 68px;
+        height: 68px;
+        border-radius: 16px;
+        box-shadow: 0 16px 32px rgba(45, 108, 255, 0.12);
+      }
+
+      .logo-badge span {
+        display: block;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cobalt);
+      }
+
+      .logo-badge strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 28px;
+        line-height: 1.06;
+      }
+
+      .outro-grid {
+        display: grid;
+        grid-template-columns: 0.7fr 1.3fr;
+        gap: 56px;
+        align-items: center;
+        height: 100%;
+      }
+
+      .outro-title {
+        max-width: 860px;
+        font-size: 98px;
+        line-height: 0.94;
+      }
+
+      .outro-copy {
+        max-width: 740px;
+        margin-top: 22px;
+        font-size: 32px;
+        line-height: 1.38;
+        color: var(--muted);
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 28px;
+      }
+
+      .tag {
+        padding: 14px 18px;
+        border-radius: 999px;
+        border: 1px solid rgba(24, 38, 63, 0.08);
+        background: rgba(255, 255, 255, 0.84);
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      #loop-title {
+        max-width: 720px;
+        font-size: 76px;
+      }
+
+      #loop-copy {
+        max-width: 640px;
+      }
+
+      #scout-title {
+        max-width: 620px;
+        font-size: 74px;
+      }
+
+      #scout-copy {
+        max-width: 590px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="40"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="shape shape-a"></div>
+      <div class="shape shape-b"></div>
+      <div class="shape shape-c"></div>
+
+      <section id="scene-intro" class="scene clip" data-start="0" data-duration="5" data-track-index="1">
+        <div class="intro-grid">
+          <div>
+            <div id="intro-eyebrow" class="eyebrow">Mission Control, Explained</div>
+            <h1 id="intro-title" class="hero-title">An operating layer for multi-agent work.</h1>
+            <p id="intro-copy" class="hero-copy">
+              Mission Control gives every mission a visible queue, a named squad, and a report
+              that survives after the chat scrolls away.
+            </p>
+            <div id="intro-stats" class="stat-row">
+              <div class="stat-chip">
+                <strong>Surface</strong>
+                <span>War Room UI</span>
+              </div>
+              <div class="stat-chip">
+                <strong>Flow</strong>
+                <span>Queue → Review → Done</span>
+              </div>
+              <div class="stat-chip">
+                <strong>Output</strong>
+                <span>Durable mission briefs</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="collage">
+            <div id="intro-card-a" class="product-card tilt-left" style="top: 84px; left: 20px; width: 760px; height: 332px;">
+              <div class="card-topline">
+                <div class="frame-label">Active squad</div>
+                <div class="frame-meta">Named specialists, visible state</div>
+              </div>
+              <div class="product-media">
+                <img src="assets/intro-dashboard-squad.png" alt="Mission Control active squad" />
+              </div>
+            </div>
+
+            <div id="intro-card-b" class="product-card tilt-right" style="top: 380px; left: 210px; width: 790px; height: 446px;">
+              <div class="card-topline">
+                <div class="frame-label">Mission queue</div>
+                <div class="frame-meta">Approvals, done items, live console</div>
+              </div>
+              <div class="product-media">
+                <img src="assets/intro-dashboard-queue.png" alt="Mission Control queue and activity feed" />
+              </div>
+            </div>
+
+            <div id="intro-note-a" class="note-card" style="top: 26px; right: 16px;">
+              <strong>What changes</strong>
+              <span>Agent work becomes legible instead of hidden in prompt chains.</span>
+            </div>
+
+            <div id="intro-note-b" class="note-card" style="bottom: 94px; left: 34px; background: #eef8f4;">
+              <strong>Why it matters</strong>
+              <span>You can see ownership, handoffs, and status in one place.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-warroom" class="scene clip" data-start="5" data-duration="7" data-track-index="1">
+        <div id="warroom-eyebrow" class="eyebrow">01 / Control Surface</div>
+        <h2 id="warroom-title" class="section-title">The product makes coordination visible.</h2>
+        <p id="warroom-copy" class="section-copy">
+          The War Room keeps the system readable: who is on the squad, which missions need a
+          decision, and what the agents are doing right now.
+        </p>
+
+        <div class="control-stage">
+          <div id="warroom-main-card" class="product-card control-main">
+              <div class="card-topline">
+                <div class="frame-label">Queue + activity feed</div>
+                <div class="frame-meta">Operations view</div>
+              </div>
+            <div class="product-media">
+              <img src="assets/crop-dashboard-queue.png" alt="Mission queue and activity feed" />
+            </div>
+          </div>
+
+          <div id="warroom-inset-card" class="product-card control-inset">
+            <div class="card-topline">
+              <div class="frame-label">Squad map</div>
+              <div class="frame-meta">Roles and status</div>
+            </div>
+            <div class="product-media">
+              <img src="assets/crop-dashboard-squad.png" alt="Active squad view" />
+            </div>
+          </div>
+
+          <div id="warroom-note-1" class="tiny-card" style="left: 112px; top: 420px;">
+            <strong>Approval needed</strong>
+            <span>Human checkpoints stay inside the flow.</span>
+          </div>
+
+          <div id="warroom-note-2" class="tiny-card" style="right: 36px; top: 184px;">
+            <strong>Live console</strong>
+            <span>Heartbeats and execution stay on-screen.</span>
+          </div>
+
+          <div id="warroom-note-3" class="tiny-card" style="right: 250px; bottom: 18px;">
+            <strong>Done lane</strong>
+            <span>Finished work is visible, not lost in chat history.</span>
+          </div>
+        </div>
+
+      </section>
+
+      <section id="scene-loop" class="scene clip" data-start="12" data-duration="10" data-track-index="1">
+        <div id="loop-eyebrow" class="eyebrow">02 / The Operating Loop</div>
+        <h2 id="loop-title" class="section-title">Under the UI is one repeatable mission loop.</h2>
+        <p id="loop-copy" class="section-copy">
+          Instead of one giant prompt, Mission Control runs work through a fixed sequence:
+          intake, route, execute, and report.
+        </p>
+
+        <div id="loop-board" class="process-board">
+          <div class="step-row">
+            <div id="loop-step-1" class="step-card step-intake">
+              <div class="step-number">1</div>
+              <h3>Intake</h3>
+              <p>A mission lands with context, urgency, and a clear next action.</p>
+            </div>
+
+            <div id="loop-step-2" class="step-card step-route">
+              <div class="step-number">2</div>
+              <h3>Route</h3>
+              <p>The gateway assigns the right specialists and sets the handoff order.</p>
+            </div>
+
+            <div id="loop-step-3" class="step-card step-execute">
+              <div class="step-number">3</div>
+              <h3>Execute</h3>
+              <p>Scout, writer, editor, and visual agents each work on their slice.</p>
+            </div>
+
+            <div id="loop-step-4" class="step-card step-report">
+              <div class="step-number">4</div>
+              <h3>Report</h3>
+              <p>The finished mission becomes a structured brief instead of disposable text.</p>
+            </div>
+          </div>
+
+          <div id="loop-connector-1" class="step-connector" style="left: 404px; width: 120px;"></div>
+          <div id="loop-connector-2" class="step-connector" style="left: 846px; width: 120px;"></div>
+          <div id="loop-connector-3" class="step-connector" style="left: 1288px; width: 120px;"></div>
+
+          <div class="memory-strip">
+            <div id="loop-memory-1" class="memory-chip">
+              <strong>Shared memory</strong>
+              <span>Convex keeps tasks, links, and working context available across missions.</span>
+            </div>
+            <div id="loop-memory-2" class="memory-chip">
+              <strong>Named ownership</strong>
+              <span>Each specialist has a visible role in the chain.</span>
+            </div>
+            <div id="loop-memory-3" class="memory-chip">
+              <strong>Reusable output</strong>
+              <span>The next mission can build from the last one instead of starting cold.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-scout" class="scene clip" data-start="22" data-duration="7" data-track-index="1">
+        <div class="split-grid">
+          <div>
+            <div id="scout-eyebrow" class="eyebrow">03 / Signal In</div>
+            <h2 id="scout-title" class="section-title">Scout turns raw links into reviewed signal.</h2>
+            <p id="scout-copy" class="section-copy">
+              Instead of pasting noisy research into chat, operators approve what moves forward,
+              reject what does not, and leave notes for the next stage.
+            </p>
+            <div class="detail-stack">
+              <div id="scout-detail-1" class="detail-card">
+                <strong>Scan briefing</strong>
+                <span>Fresh findings arrive in a dedicated approval surface.</span>
+              </div>
+              <div id="scout-detail-2" class="detail-card">
+                <strong>Operator review</strong>
+                <span>Approve, reject, and annotate before the writer ever sees the feed.</span>
+              </div>
+              <div id="scout-detail-3" class="detail-card">
+                <strong>Cleaner handoff</strong>
+                <span>The downstream agents inherit curated inputs instead of raw browsing noise.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-shell">
+            <div id="scout-card" class="product-card scout-main">
+              <div class="card-topline">
+                <div class="frame-label">Scout feed</div>
+                <div class="frame-meta">Approve / reject / note</div>
+              </div>
+              <div class="product-media">
+                <img src="assets/crop-scout-grid.png" alt="Scout feed" />
+              </div>
+            </div>
+
+            <div id="scout-note-1" class="note-card" style="top: 34px; left: 34px;">
+              <strong>Human in the loop</strong>
+              <span>Review happens before bad inputs propagate through the chain.</span>
+            </div>
+
+            <div id="scout-note-2" class="note-card" style="right: 22px; bottom: 56px; background: #eef4ff;">
+              <strong>Writer-ready</strong>
+              <span>Approved items become a tighter brief for the next specialist.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-report" class="scene clip" data-start="29" data-duration="7" data-track-index="1">
+        <div class="split-grid" style="grid-template-columns: 0.88fr 1.12fr;">
+          <div>
+            <div id="report-eyebrow" class="eyebrow">04 / Signal Out</div>
+            <h2 id="report-title" class="section-title">The output is a brief with evidence, not a disposable log.</h2>
+            <p id="report-copy" class="section-copy">
+              Finished missions become readable reports with reasoning, evidence, recommendations,
+              and a visible trace of who contributed what.
+            </p>
+            <div class="detail-stack">
+              <div id="report-detail-1" class="detail-card">
+                <strong>Mission report</strong>
+                <span>One artifact gathers the conclusion, context, and next moves.</span>
+              </div>
+              <div id="report-detail-2" class="detail-card">
+                <strong>Reasoning + evidence</strong>
+                <span>The brief shows why the recommendation exists, not just what it is.</span>
+              </div>
+              <div id="report-detail-3" class="detail-card">
+                <strong>Durable memory</strong>
+                <span>Useful work persists for the next mission instead of vanishing into scrollback.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="report-stage">
+            <div id="report-top-card" class="product-card report-top">
+              <div class="card-topline">
+                <div class="frame-label">Report header</div>
+                <div class="frame-meta">Agent trace + mission status</div>
+              </div>
+              <div class="product-media">
+                <img src="assets/crop-report-top.png" alt="Mission report top section" />
+              </div>
+            </div>
+
+            <div id="report-body-card" class="product-card report-body">
+              <div class="card-topline">
+                <div class="frame-label">Evidence body</div>
+                <div class="frame-meta">Reasoning, links, source trail</div>
+              </div>
+              <div class="product-media">
+                <img src="assets/crop-report-body.png" alt="Mission report evidence section" />
+              </div>
+            </div>
+
+            <div id="report-note-1" class="note-card" style="left: 38px; bottom: 56px;">
+              <strong>Readable output</strong>
+              <span>The report is meant to be used, not merely generated.</span>
+            </div>
+
+            <div id="report-note-2" class="note-card" style="right: 16px; top: 12px; background: #eef8f4;">
+              <strong>Built for reuse</strong>
+              <span>Future missions can build on the brief instead of asking the same questions again.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-outro" class="scene clip" data-start="36" data-duration="4" data-track-index="1">
+        <div class="outro-grid">
+          <div id="outro-logo" class="logo-badge">
+            <img src="assets/mission-control-icon.png" alt="Mission Control icon" />
+            <div>
+              <span>Mission Control</span>
+              <strong>Agent operations, made visible.</strong>
+            </div>
+          </div>
+
+          <div>
+            <div id="outro-eyebrow" class="eyebrow">Mission Control</div>
+            <h2 id="outro-title" class="outro-title">From queue to brief, in one system.</h2>
+            <p id="outro-copy" class="outro-copy">
+              Run missions through a visible squad, keep the memory loop intact,
+              and turn agent work into an operating practice instead of a hidden chat ritual.
+            </p>
+            <div id="outro-tags" class="tag-row">
+              <div class="tag">Queue work</div>
+              <div class="tag">Route specialists</div>
+              <div class="tag">Review signal</div>
+              <div class="tag">Ship briefs</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set([
+        "#scene-intro",
+        "#scene-warroom",
+        "#scene-loop",
+        "#scene-scout",
+        "#scene-report",
+        "#scene-outro"
+      ], { autoAlpha: 0 });
+
+      tl.set("#scene-intro", { autoAlpha: 1 }, 0)
+        .to("#scene-intro", { autoAlpha: 0, duration: 0.5, ease: "power2.inOut" }, 4.4)
+        .set("#scene-warroom", { autoAlpha: 1 }, 5.0)
+        .to("#scene-warroom", { autoAlpha: 0, duration: 0.5, ease: "power2.inOut" }, 11.4)
+        .set("#scene-loop", { autoAlpha: 1 }, 12.0)
+        .to("#scene-loop", { autoAlpha: 0, duration: 0.5, ease: "power2.inOut" }, 21.4)
+        .set("#scene-scout", { autoAlpha: 1 }, 22.0)
+        .to("#scene-scout", { autoAlpha: 0, duration: 0.5, ease: "power2.inOut" }, 28.4)
+        .set("#scene-report", { autoAlpha: 1 }, 29.0)
+        .to("#scene-report", { autoAlpha: 0, duration: 0.5, ease: "power2.inOut" }, 35.4)
+        .set("#scene-outro", { autoAlpha: 1 }, 36.0);
+
+      tl.from("#intro-eyebrow", { opacity: 0, y: 18, duration: 0.45, ease: "power2.out" }, 0.1)
+        .from("#intro-title", { opacity: 0, y: 34, duration: 0.85, ease: "power3.out" }, 0.2)
+        .from("#intro-copy", { opacity: 0, y: 24, duration: 0.6, ease: "power2.out" }, 0.45)
+        .from("#intro-stats .stat-chip", {
+          opacity: 0,
+          y: 24,
+          stagger: 0.1,
+          duration: 0.55,
+          ease: "power2.out"
+        }, 0.75)
+        .from("#intro-card-a", {
+          opacity: 0,
+          x: 60,
+          y: 30,
+          rotate: -4,
+          duration: 0.9,
+          ease: "power3.out"
+        }, 0.35)
+        .from("#intro-card-b", {
+          opacity: 0,
+          x: -40,
+          y: 40,
+          rotate: 4,
+          duration: 0.95,
+          ease: "power3.out"
+        }, 0.55)
+        .from(["#intro-note-a", "#intro-note-b"], {
+          opacity: 0,
+          scale: 0.9,
+          stagger: 0.1,
+          duration: 0.45,
+          ease: "back.out(1.6)"
+        }, 1.15)
+        .to("#intro-card-a img", { scale: 1.03, xPercent: -1.5, duration: 4.6, ease: "none" }, 0.25)
+        .to("#intro-card-b img", { scale: 1.035, yPercent: -1.2, duration: 4.6, ease: "none" }, 0.25);
+
+      tl.from("#warroom-eyebrow", { opacity: 0, y: 18, duration: 0.45 }, 5.05)
+        .from("#warroom-title", { opacity: 0, y: 30, duration: 0.8, ease: "power3.out" }, 5.15)
+        .from("#warroom-copy", { opacity: 0, y: 22, duration: 0.55, ease: "power2.out" }, 5.4)
+        .from("#warroom-main-card", {
+          opacity: 0,
+          x: 70,
+          scale: 0.95,
+          duration: 0.95,
+          ease: "power3.out"
+        }, 5.35)
+        .from("#warroom-inset-card", {
+          opacity: 0,
+          x: -65,
+          y: -16,
+          scale: 0.96,
+          duration: 0.9,
+          ease: "power3.out"
+        }, 5.65)
+        .from(["#warroom-note-1", "#warroom-note-2", "#warroom-note-3"], {
+          opacity: 0,
+          y: 20,
+          stagger: 0.1,
+          duration: 0.5,
+          ease: "power2.out"
+        }, 6.1)
+        .to("#warroom-main-card img", { scale: 1.035, xPercent: -1.4, duration: 6.6, ease: "none" }, 5.25)
+        .to("#warroom-inset-card img", { scale: 1.025, xPercent: -0.8, duration: 6.6, ease: "none" }, 5.25);
+
+      tl.from("#loop-eyebrow", { opacity: 0, y: 18, duration: 0.45 }, 12.05)
+        .from("#loop-title", { opacity: 0, y: 30, duration: 0.82, ease: "power3.out" }, 12.15)
+        .from("#loop-copy", { opacity: 0, y: 22, duration: 0.55, ease: "power2.out" }, 12.4)
+        .from("#loop-board", { opacity: 0, y: 34, duration: 0.9, ease: "power3.out" }, 12.5)
+        .from(["#loop-step-1", "#loop-step-2", "#loop-step-3", "#loop-step-4"], {
+          opacity: 0,
+          y: 26,
+          stagger: 0.14,
+          duration: 0.56,
+          ease: "power2.out"
+        }, 13.0)
+        .from(["#loop-connector-1", "#loop-connector-2", "#loop-connector-3"], {
+          opacity: 0,
+          scaleX: 0,
+          transformOrigin: "left center",
+          stagger: 0.1,
+          duration: 0.38,
+          ease: "power2.out"
+        }, 13.5)
+        .from(["#loop-memory-1", "#loop-memory-2", "#loop-memory-3"], {
+          opacity: 0,
+          y: 18,
+          stagger: 0.1,
+          duration: 0.46,
+          ease: "power2.out"
+        }, 13.95);
+
+      tl.from("#scout-eyebrow", { opacity: 0, y: 18, duration: 0.45 }, 22.05)
+        .from("#scout-title", { opacity: 0, y: 30, duration: 0.82, ease: "power3.out" }, 22.15)
+        .from("#scout-copy", { opacity: 0, y: 22, duration: 0.55, ease: "power2.out" }, 22.4)
+        .from(["#scout-detail-1", "#scout-detail-2", "#scout-detail-3"], {
+          opacity: 0,
+          x: -28,
+          stagger: 0.1,
+          duration: 0.52,
+          ease: "power2.out"
+        }, 22.75)
+        .from("#scout-card", {
+          opacity: 0,
+          x: 70,
+          scale: 0.95,
+          duration: 0.95,
+          ease: "power3.out"
+        }, 22.55)
+        .from(["#scout-note-1", "#scout-note-2"], {
+          opacity: 0,
+          scale: 0.9,
+          stagger: 0.12,
+          duration: 0.46,
+          ease: "back.out(1.6)"
+        }, 23.0)
+        .to("#scout-card img", { scale: 1.04, xPercent: -1.1, duration: 6.8, ease: "none" }, 22.55);
+
+      tl.from("#report-eyebrow", { opacity: 0, y: 18, duration: 0.45 }, 29.05)
+        .from("#report-title", { opacity: 0, y: 30, duration: 0.82, ease: "power3.out" }, 29.15)
+        .from("#report-copy", { opacity: 0, y: 22, duration: 0.55, ease: "power2.out" }, 29.4)
+        .from(["#report-detail-1", "#report-detail-2", "#report-detail-3"], {
+          opacity: 0,
+          x: -28,
+          stagger: 0.1,
+          duration: 0.52,
+          ease: "power2.out"
+        }, 29.75)
+        .from("#report-top-card", {
+          opacity: 0,
+          x: 70,
+          y: -12,
+          scale: 0.95,
+          duration: 0.85,
+          ease: "power3.out"
+        }, 29.5)
+        .from("#report-body-card", {
+          opacity: 0,
+          x: 40,
+          y: 34,
+          scale: 0.95,
+          duration: 0.95,
+          ease: "power3.out"
+        }, 29.7)
+        .from(["#report-note-1", "#report-note-2"], {
+          opacity: 0,
+          scale: 0.9,
+          stagger: 0.12,
+          duration: 0.46,
+          ease: "back.out(1.6)"
+        }, 30.15)
+        .to("#report-top-card img", { scale: 1.03, xPercent: -0.9, duration: 6.6, ease: "none" }, 29.55)
+        .to("#report-body-card img", { scale: 1.035, yPercent: -0.8, duration: 6.6, ease: "none" }, 29.65);
+
+      tl.from("#outro-logo", {
+        opacity: 0,
+        x: -40,
+        scale: 0.94,
+        duration: 0.8,
+        ease: "power3.out"
+      }, 36.05)
+        .from("#outro-eyebrow", { opacity: 0, y: 18, duration: 0.45 }, 36.15)
+        .from("#outro-title", { opacity: 0, y: 30, duration: 0.8, ease: "power3.out" }, 36.28)
+        .from("#outro-copy", { opacity: 0, y: 22, duration: 0.55, ease: "power2.out" }, 36.52)
+        .from("#outro-tags .tag", {
+          opacity: 0,
+          y: 18,
+          stagger: 0.08,
+          duration: 0.4,
+          ease: "power2.out"
+        }, 36.75);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

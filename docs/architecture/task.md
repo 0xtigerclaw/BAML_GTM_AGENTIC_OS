@@ -1,0 +1,22 @@
+# Multi-Agent Framework Comparison & Analysis
+
+- [x] Research Reference Architecture <!-- id: 0 -->
+    - [x] Read Google Developers Blog Post: "Architecting an Efficient Context-Aware Multi-Agent Framework for Production" <!-- id: 1 -->
+- [x] Analyze Current System (Clawd/Mission Control) <!-- id: 2 -->
+    - [x] Review Orchestration (Gateway, Tigerclaw) <!-- id: 3 -->
+    - [x] Review Context Management (Memory, RAG, Convex) <!-- id: 4 -->
+    - [x] Review LLM Service & Token Management (`services/llm.ts`) <!-- id: 11 -->
+    - [x] Review Data Model (`convex/schema.ts`) <!-- id: 12 -->
+    - [x] Review Tooling & efficiency <!-- id: 5 -->
+- [x] Synthesize Comparison Report <!-- id: 6 -->
+    - [x] Document "What we are doing" <!-- id: 7 -->
+    - [x] Identify "Missing Gaps" <!-- id: 8 -->
+    - [x] Propose "What we can add" <!-- id: 9 -->
+    - [x] Highlight "Strengths" <!-- id: 10 -->
+- [x] Generate Workflow Visuals <!-- id: 13 -->
+    - [x] Create Mermaid Architecture Diagram <!-- id: 14 -->
+    - [x] Generate Conceptual System Image <!-- id: 15 -->
+    - [x] Refine Visuals <!-- id: 16 -->
+- [ ] Create Recommendations Artifact <!-- id: 18 -->
+    - [ ] Document Architecture Improvements <!-- id: 19 -->
+    - [ ] Design Proposed System Diagrams (Context Engine, GraphRAG) <!-- id: 20 -->
