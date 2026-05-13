@@ -2,6 +2,8 @@
 
 Agentic GTM OS demo for BAML / BoundaryML. It adapts the Mission Control scaffold into a developer opportunity radar: find BAML-fit developer complaints, approve the best moments, and generate a technical response package for human review.
 
+**Prototype demo:** https://baml-gtm-agentic-os.vercel.app/
+
 ## GTM Objective
 
 BAML needs to find moments where developers are already complaining about structured outputs, brittle JSON parsing, prompt testing, provider switching, or AI workflow reliability, then respond with useful technical proof instead of generic marketing.
