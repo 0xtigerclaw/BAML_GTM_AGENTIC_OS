@@ -15,9 +15,71 @@ This app turns that into a human-gated agent workflow:
 5. The human manually publishes outside the app and later records outcome feedback.
 6. Tigerclaw evaluates the outcome so the system can improve future scoring and copy.
 
+## High-Level Architecture
+
+At the highest level, the app is a human-gated GTM workflow. The UI collects or selects developer-discussion opportunities, Convex stores the mission state, OpenClaw Gateway manages the agent runtime, and the final artifact is a manually publishable BAML response package.
+
+```mermaid
+flowchart LR
+  subgraph Sources["Developer Discussion Sources"]
+    X["X"]
+    Reddit["Reddit"]
+    GitHub["GitHub"]
+    HN["Hacker News"]
+    Paste["Pasted Context"]
+    DemoCases["Seeded Demo Cases"]
+  end
+
+  subgraph UI["Next.js BAML GTM Agentic OS"]
+    Radar["Opportunity Radar<br/>source cards, manual input,<br/>candidate inbox"]
+    Gate1{"Human Gate 1<br/>approve, reject, snooze"}
+    MissionView["Mission View<br/>response package,<br/>scores, proof, drafts, QA"]
+    Gate2{"Human Gate 2<br/>publish, revise,<br/>do not engage"}
+    FeedbackUI["Post-Outcome Feedback<br/>engagement rubric<br/>and notes"]
+  end
+
+  subgraph State["Convex Backend"]
+    Tasks["Tasks / Missions"]
+    Activity["Activity Feed"]
+    Queue["Mission Queue"]
+    Artifacts["Structured Artifacts"]
+  end
+
+  subgraph Gateway["OpenClaw Gateway Runtime"]
+    Router["Workflow Router"]
+    Harness["Agent Harness Loader<br/>squad/baml-gtm/*.md"]
+    Agents["Porter -> Torvalds -> Ogilvy -> Carnegie -> Tigerclaw"]
+    Evaluator["Scoring + Feedback Loop"]
+  end
+
+  Sources --> Radar
+  DemoCases --> Radar
+  Radar --> Gate1
+  Gate1 -->|"approved only"| Tasks
+  Gate1 -->|"reject / snooze"| Queue
+  Tasks --> Router
+  Router --> Harness
+  Harness --> Agents
+  Agents --> Artifacts
+  Router --> Activity
+  Router --> Queue
+  Artifacts --> MissionView
+  MissionView --> Gate2
+  Gate2 -->|"manual publish outside app"| Published["External Channel<br/>X, Reddit, GitHub, HN, etc."]
+  Gate2 -->|"revise / block"| MissionView
+  Published --> FeedbackUI
+  FeedbackUI --> Evaluator
+  Evaluator --> Artifacts
+```
+
 ## OpenClaw Gateway System Diagram
 
 OpenClaw Gateway is the runtime engine and control plane. It owns mission state, agent routing, handoff order, logging, final package assembly, and human review boundaries. The agents do specialized work; the gateway decides when each agent runs, what context it receives, where the output is stored, and whether the mission is ready for the next stage.
+
+<details>
+<summary>Comprehensive OpenClaw Gateway control-plane diagram</summary>
+
+This deeper diagram expands the gateway internals: how approved opportunities become Convex mission tasks, how skill files become agent harnesses, how handoff validation works, and how Mission Queue / Activity Feed stay in sync.
 
 ```mermaid
 flowchart TD
@@ -82,6 +144,58 @@ flowchart TD
   Evaluation --> StateWriter
   StateWriter --> Queue["Mission Queue<br/>status, assignee, current step"]
   StateWriter --> Feed["Activity Feed<br/>gateway events, agent thinking,<br/>handoff logs, approvals"]
+```
+
+</details>
+
+## Agent Swimlane Diagram
+
+This view shows the same workflow as swimlanes: each lane owns one stage of the GTM mission, and OpenClaw Gateway carries the context forward while enforcing human gates.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Human as Human Reviewer
+  participant Curie as Curie Radar
+  participant Gateway as OpenClaw Gateway
+  participant Porter as Porter Scoring
+  participant Torvalds as Torvalds Technical Proof
+  participant Ogilvy as Ogilvy Drafting
+  participant Carnegie as Carnegie QA
+  participant Tigerclaw as Tigerclaw Evaluation
+  participant App as Mission Control UI
+  participant Channel as External Channel
+
+  Human->>Curie: Select seeded case or add source URL / text
+  Curie->>App: Candidate card with pain, BAML fit, confidence
+  Human->>App: Human Gate 1 decision
+
+  alt approved
+    App->>Gateway: Create BAML mission task
+    Gateway->>Porter: Opportunity + discussion + BAML context
+    Porter-->>Gateway: Scorecard, risk score, recommended angle
+    Gateway->>Torvalds: Scorecard + approved opportunity
+    Torvalds-->>Gateway: Technical proof, caveats, resource link
+    Gateway->>Ogilvy: Proof + channel constraints
+    Ogilvy-->>Gateway: X, HN/Reddit, DevRel DM, resource CTA drafts
+    Gateway->>Carnegie: Drafts + proof + scorecard
+    Carnegie-->>Gateway: Integrity checks, policy risk, final polish
+    Gateway->>Tigerclaw: All handoff outputs
+    Tigerclaw-->>Gateway: Final package, score breakdown, recommendation
+    Gateway->>App: Update Mission Queue, Activity Feed, mission tabs
+    Human->>App: Human Gate 2 review
+    alt publish
+      Human->>Channel: Manual publish outside app
+      Human->>App: Record post-outcome feedback
+      App->>Tigerclaw: Outcome rubric and notes
+      Tigerclaw-->>App: Evaluation notes and system improvements
+    else revise or do not engage
+      Human->>App: Revise package or close mission
+    end
+  else rejected or snoozed
+    App->>Gateway: No agent run
+    App->>App: Keep candidate out of active mission workflow
+  end
 ```
 
 ### Runtime Modes
