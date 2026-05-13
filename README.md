@@ -360,10 +360,17 @@ candidate -> human approval -> hosted OpenClaw Gateway simulation -> completed B
 Set these environment variables in Vercel after creating a hosted Convex deployment:
 
 ```text
-NEXT_PUBLIC_CONVEX_URL=<your hosted Convex URL>
-NEXT_PUBLIC_CONVEX_SITE_URL=<your hosted Convex site URL if Convex provides one>
+CONVEX_DEPLOY_KEY=<your Convex production deploy key>
 NEXT_PUBLIC_HOSTED_DEMO=true
 ```
+
+This repo includes `vercel.json`, which sets the Vercel build command to:
+
+```bash
+npx convex deploy --cmd-url-env-var-name NEXT_PUBLIC_CONVEX_URL --cmd 'npm run build'
+```
+
+That command deploys the Convex backend first, injects `NEXT_PUBLIC_CONVEX_URL` for the Next.js build, then builds the frontend. If Vercel runs plain `npm run build`, the app will not have a Convex URL and the live UI will not work.
 
 Recommended publish flow:
 
