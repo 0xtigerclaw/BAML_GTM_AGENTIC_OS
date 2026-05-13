@@ -12,17 +12,17 @@ This project uses a shared bulk-import pipeline for RSS sources.
 
 ## Import scripts
 
-- `sync_rss_sources.ts`: unified orchestrator for source packs (recommended entrypoint).
-- `import_neolabs_feeds.ts`: imports sources from `buildNeoLabsCatalog()`.
-- `sync_neolabs_official_sources.ts`: adds/updates `NeoLabs` official-site feeds using curated domains and Convex feed discovery.
-- `sync_neolabs_proxy_sources.ts`: fallback importer that ingests proxy-feeds for unresolved NeoLabs only when no official feed exists for the lab.
-- `import_olshansk_feeds.ts`: fetches Olshansk feed list from GitHub, maps to sources, then imports via shared utility.
+- `tools/scripts/sync_rss_sources.ts`: unified orchestrator for source packs (recommended entrypoint).
+- `tools/scripts/import_neolabs_feeds.ts`: imports sources from `buildNeoLabsCatalog()`.
+- `tools/scripts/sync_neolabs_official_sources.ts`: adds/updates `NeoLabs` official-site feeds using curated domains and Convex feed discovery.
+- `tools/scripts/sync_neolabs_proxy_sources.ts`: fallback importer that ingests proxy-feeds for unresolved NeoLabs only when no official feed exists for the lab.
+- `tools/scripts/import_olshansk_feeds.ts`: fetches Olshansk feed list from GitHub, maps to sources, then imports via shared utility.
 
 Both scripts now use the same Convex ingestion path and result format.
 
 ## NeoLabs official sync behavior
 
-- `sync_neolabs_official_sources.ts` is the strict official-only updater for NeoLabs.
+- `tools/scripts/sync_neolabs_official_sources.ts` is the strict official-only updater for NeoLabs.
 - It is non-destructive (add/update only), and never bulk-deletes existing sources.
 - It validates discovered feeds against the expected official domain and records unresolved labs with explicit reasons.
 - Candidate endpoint breadth is tunable with `NEOLABS_MAX_ENTRYPOINTS` (default: `8`) to balance coverage vs run time.
@@ -52,5 +52,5 @@ These are intentionally separate from sync/import flows and are never called by 
 - Existing sources are skipped when either `url` or `originalUrl` already exists.
 - New sources are validated by `api.rssActions.addVerifiedSource` before insert/update.
 - Failures are reported per source and summarized at the end.
-- `sync_neolabs_official_sources.ts` is strict and non-destructive: it only uses curated official domains, intentionally avoids generic news feeds, and does not delete existing sources.
-- `sync_neolabs_proxy_sources.ts` is also non-destructive and only backfills unresolved labs (it skips labs that already have official non-proxy feeds).
+- `tools/scripts/sync_neolabs_official_sources.ts` is strict and non-destructive: it only uses curated official domains, intentionally avoids generic news feeds, and does not delete existing sources.
+- `tools/scripts/sync_neolabs_proxy_sources.ts` is also non-destructive and only backfills unresolved labs (it skips labs that already have official non-proxy feeds).
